@@ -1,0 +1,191 @@
+body{
+    font-family:'ヒラギノ角ゴ Pro W3','Hiragino Kaku Gothic Pro','メイリオ',Meiryo,'ＭＳ Ｐゴシック',sans-serif;
+    height:100%;
+}
+
+
+/*検索部分*/
+.search{
+    font-weight: bold;
+    background-color:#D7EBFE;
+    position:fixed;
+    float:left;
+    font-size: 30px;
+    width:330px;
+    color:#494949;
+    height:100%;    
+}
+.search p{
+    padding: 1em 1.5em;
+    color: #494949;
+    background: transparent;
+    font-weight:900;
+}
+
+.search p{
+    font-weight:bold;
+    margin: auto;
+}
+
+.search ul{
+    margin: auto;
+}
+
+/*練習開始ボタン*/
+.search input[type="button"] {
+    -webkit-appearance: none;
+    border-radius: 0;
+    color:white;
+    border: none;
+    width: 300px;
+    height: 100px;
+    margin-top:15px;
+    margin-bottom:35px;
+    margin-left:15px;
+    font-weight: bold;
+    text-align:center;
+    background-color:#f5c400;
+    border-radius: 5px;
+    font-size:40px;
+    transition: .4s;
+    border-bottom: 5px solid #DBA91B;
+}
+
+/*日付選択ボタン*/
+input[type="date"] {
+  -webkit-appearance: none;
+    font-size: 28px;
+    height: 48px;
+    width:250px;
+}
+
+/*チーム評価*/
+.search input[name="team"] {
+    margin-left:35px;
+    -webkit-appearance: none;
+    font-weight: bold;
+    font-size:27px;
+    padding: 20px 40px 20px 40px;
+    text-decoration: none;
+    color: #FFF;
+    background:#8690FB;
+    border-style: none;
+    letter-spacing: 9px;
+    border-radius: 2px;
+}
+
+/*目標達成率*/
+.search input[name="team_target"] {
+    margin-left:35px;
+    -webkit-appearance: none;
+    font-weight: bold;
+    font-size:27px;
+    padding: 20px 40px 20px 40px;
+    text-decoration: none;
+    color: #FFF;
+    background:#5E6BF9;
+    border-style: none;
+    letter-spacing: 9px;
+    border-radius: 2px;
+    margin-top:30px;
+}
+
+/*選手名検索*/
+.search-area input[type="text"] ,[type="text"]{
+    padding: 12px 2px 13px;
+     width:250px;
+    font-size: 18px;
+    border: 1px solid #D6D6D6;
+}
+
+.search-area input[type="text"]:focus,[type="text"] {
+    background: #F9F9F9;
+}
+
+.search-result {
+    margin-top: 20px;
+}
+.hit-num__text span {
+    font-weight: bold;
+}
+#search-result__list {
+    margin-top: 15px;
+}
+#search-result__list span {
+    display: inline-block;
+    margin-right: 15px;
+    padding: 5px;
+    background: #F2F2F2;
+}
+.target-area {
+    margin-top: 50px;
+}
+.target-area .hidden {
+    display: none
+}
+
+/*日付変更ボタン*/
+.search input[name="date_change"] {
+    -webkit-appearance: none;
+    font-weight: bold;
+    font-size:25px;
+    padding: 7px 15px 7px 15px;
+    text-decoration: none;
+    color:black;
+    background:white;
+    border-style: none;
+    margin-top:10px;
+    margin-left:170px;
+    border-radius:4px;/*角の丸み*/
+    border: solid 0.2px black;
+}
+
+
+/*選手一覧部分*/
+
+.main{
+    float:right;
+    font-size:50px;
+    width:600px;
+    
+}
+
+.main ul {
+    list-style: none;
+}
+
+.main input#submit_button {
+    margin-left:7px;
+    -webkit-appearance: none;
+    font-weight: bold;
+    font-size:27px;
+    padding: 20px 20px 20px 20px;
+    text-decoration: none;
+    color: #FFF;
+    background:#add5de;
+    border-style: none;
+    letter-spacing: 9px;
+    border-radius: 100px;
+}
+
+.name{
+    padding-top:25px;
+    float:right;
+    font-size:60px;
+    width: 370px;
+    margin: auto;
+    color:#494949;
+}
+
+img[src^="data"]{
+  padding: 0.1em;
+    margin: 0.1em 0;
+    font-weight: bold;
+    border: solid 5px #DCDCDC;
+    border-radius: 10px;/*角の丸み*/
+  width:140px;
+  height: 140px;
+  object-fit: contain; 
+  margin: auto;
+  object-fit: cover; 
+}

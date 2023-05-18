@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>顔認証</title>
+    <style>
+        body{
+            margin:0;
+        }
+        #videoCanvas{
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 100;
+        }
+        .button1{
+            padding: 15px 30px;
+            background-color: #D7EBFE;
+            font-size:26px;
+            border-radius: 15px;
+            vertical-align: baseline;
+            color: black;
+            font-weight: 900;
+            display: inline-block;
+            margin: 10px;
+        }
+        #buttonBox{
+            position: absolute;
+            top: 90%;
+            left: 50%;
+            width: 100vw;
+            transform: translate(-50%, -50%);
+            -webkit-transform: translate(-50%, -50%);
+            -ms-transform: translate(-50%, -50%);
+            z-index:101;
+        }
+    </style>
+</head>
+<body>
+
+        <video id="videoCapture" playsinline></video>
+        <canvas id="videoCanvas"></canvas>
+    <div id="buttonBox">
+        <center>
+            <div class="button1" onclick="signin();">Sign in</div>
+            <div class="button1" onclick="signup();">Sign up</div>
+        </center>
+    </div>
+    <script>
+        let allowUseCamera = false;
+        let stopUpdateImage = false;
+        
+        //画面の高さ、幅を取得
+        
+        let videoWidth =  window.innerWidth;
+        let videoHeight = window.innerHeight;
+        
+        
+        let videoCapture = document.getElementById('videoCapture'); 
+        let videoCanvas = document.getElementById('videoCanvas');
+        
+       
+        videoCanvas.width = videoWidth;
+        videoCanvas.height = videoHeight;
+        videoCapture.width = videoWidth;
+        videoCapture.height = videoHeight;
+        
+        let endpoint = "https://japanwest.api.cognitive.microsoft.com/face/v1.0/";
+        let largeFaceList = "ishindensin";
+        let key = "996d7c8f9f5f4f76b4fe11af179aa52d";
+    
+        //0.1秒ごとに画像を更新する
+        setInterval(function(){
+            if(!stopUpdateImage){
+                var context = videoCanvas.getContext('2d');
+                context.drawImage(videoCapture, 0, 0, videoWidth,videoHeight);
+            }
+        },100);
+        
+       
+         if(videoHeight > videoWidth){
+             //videoHeight =  window.innerWidth;
+             videoWidth = window.innerHeight;
+            
+         }
+        
+         
+        
+        navigator.mediaDevices.getUserMedia({audio: false, video: {facingMode: "user", width: videoWidth, height: videoHeight}}).then(function(stream){
+            videoCapture.srcObject = stream;
+            videoCapture.play();
+            allowUseCamera = true;
+        });
+    
+        function signin(){
+            if(allowUseCamera){
+                stopUpdateImage = true;
+                let img = getImg();
+                let detect = new XMLHttpRequest();
+                detect.open('POST', endpoint+"detect", true);
+                detect.setRequestHeader('Content-Type','application/octet-stream');
+                detect.setRequestHeader('Ocp-Apim-Subscription-Key',key);
+                detect.responseType = 'text';
+                detect.onload = function(){
+                    console.log(detect.responseText);
+                    let faceId = JSON.parse(detect.responseText)[0].faceId;
+                    let params = {faceId: faceId, "largeFaceListId": largeFaceList, "maxNumOfCandidatesReturned": 1, mode: "matchPerson"};
+                    
+                    let findSimilars = new XMLHttpRequest();
+                    findSimilars.open('POST', endpoint+"findsimilars", true);
+                    findSimilars.setRequestHeader('Content-Type','application/json');
+                    findSimilars.setRequestHeader('Ocp-Apim-Subscription-Key',key);
+                    findSimilars.responseType = 'text';
+                    findSimilars.onload = function(){
+                        console.log(findSimilars.responseText);
+                        let faceId = JSON.parse(findSimilars.responseText)[0].persistedFaceId;
+                        
+                        let login = new XMLHttpRequest();
+                        login.open('POST', "login.php", true);
+                        login.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+                        login.onload = function(){
+                            let result = login.responseText;
+                            if(result === "0"){
+                                console.log("失敗");
+                                stopUpdateImage = false;
+                            }else if(result === "1"){
+                                console.log("成功");
+                                location.href = "https://web2-17423.azurewebsites.net/ISHINDENSHIN/web.php?face_id="+faceId;
+                            }else{
+                                console.log("エラー",result);
+                                stopUpdateImage = false;
+                            }
+                        }
+                        login.send("face_id="+faceId);
+                    }
+                    findSimilars.send(JSON.stringify(params));
+                }
+                detect.send(img);
+            }
+        }
+        
+    
+        function signup(){
+            if(allowUseCamera){
+                stopUpdateImage = true;
+                let img = getImg();
+                
+                console.log(img);
+                
+                
+                var canvas = document.getElementById("videoCanvas") 
+                console.log(canvas.toDataURL("image/png"));
+                
+                
+                let addFace = new XMLHttpRequest();
+                addFace.open('POST', endpoint+"/largefacelists/"+largeFaceList+"/persistedfaces", true);
+                addFace.setRequestHeader('Content-Type','application/octet-stream');
+                addFace.setRequestHeader('Ocp-Apim-Subscription-Key',key);
+                addFace.responseType = 'text';
+                addFace.onload = function(){
+                    let faceId = JSON.parse(addFace.responseText).persistedFaceId;
+    
+                    let train = new XMLHttpRequest();
+                    train.open('POST', endpoint+"/largefacelists/"+largeFaceList+"/train", true);
+                    train.setRequestHeader('Ocp-Apim-Subscription-Key',key);
+                    train.send();
+    				
+    				// let insert = new XMLHttpRequest();
+                    // insert.open('POST', "insert_face.php", true);
+                    // insert.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+                    // insert.send("face_id="+faceId);
+                    location.href = "register.php?face_id="+faceId+"&img="+img;
+                }
+                addFace.send(img);
+            }
+        }
+    
+    
+    
+        function getImg() {
+            let dataURL = videoCanvas.toDataURL("image/png");
+            console.log(dataURL);//こいつをデータベースに送る
+			// let insert = new XMLHttpRequest();
+            // insert.send("dataURL="+dataURL);
+            // location.href = "register.php?dataURL="+dataURL;
+            let BASE64_MARKER = ';base64,';
+            if (dataURL.indexOf(BASE64_MARKER) == -1) {
+                let parts = dataURL.split(',');
+                let contentType = parts[0].split(':')[1];
+                let raw = decodeURIComponent(parts[1]);
+            }
+            let parts = dataURL.split(BASE64_MARKER);
+            let contentType = parts[0].split(':')[1];
+            let raw = window.atob(parts[1]);
+            let rawLength = raw.length;
+            let uInt8Array = new Uint8Array(rawLength);
+            for (let i = 0; i < rawLength; ++i) {
+                uInt8Array[i] = raw.charCodeAt(i);
+            }
+            return new Blob([uInt8Array], {type: contentType})
+        }
+    </script>
+</body>
+</html>

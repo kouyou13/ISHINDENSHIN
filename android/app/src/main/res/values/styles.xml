@@ -1,0 +1,12 @@
+<resources>
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="android:colorPrimaryDark">#000000</item><!--アクションバーの色-->
+    </style>
+    <style name="EditTextColorControl">
+        <item name="colorControlNormal">#9999FF</item>
+        <item name="colorControlActivated">#CC66CC</item>
+    </style>
+
+</resources>
